@@ -38,10 +38,10 @@ class BasicPHPGenerator extends BasicGenerator {
   override def destinationDir = "generated-code/php"
 
   // package for models
-  override def modelPackage = Some("models")
+  override def modelPackage = Some("FlexibleDiscounting\\Models")
 
   // package for apis
-  override def apiPackage = Some("")
+  override def apiPackage = Some("FlexibleDiscounting")
 
   // file suffix
   override def fileSuffix = ".php"
@@ -156,8 +156,9 @@ class BasicPHPGenerator extends BasicGenerator {
   override def escapeReservedWord(word: String) = "`" + word + "`"
 
   // supporting classes
-  override def supportingFiles = List(
-    ("Swagger.mustache", destinationDir + File.separator + apiPackage.get,
-     "Swagger.php")
-  )
+  //override def supportingFiles = List(
+  //  ("Swagger.mustache", destinationDir + File.separator + apiPackage.get,
+  //   "Swagger.php")
+  //)
+  override def supportingFiles = List()
 }
