@@ -23,7 +23,7 @@
  *
  */
 
-namespace Allegro\{{package}};
+namespace {{package}};
 
 {{#models}}
 {{#model}}
@@ -39,12 +39,12 @@ class {{classname}}
     );
 
     {{#vars}}
-    {{#description}}
     /**
     * {{description}}
+    *
+    * @var {{{datatype}}}
     */
-    {{/description}}
-    public ${{name}}; // {{{datatype}}}
+    public ${{name}};
     {{/vars}}
 {{newline}}
 }

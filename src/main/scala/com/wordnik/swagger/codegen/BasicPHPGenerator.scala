@@ -38,10 +38,10 @@ class BasicPHPGenerator extends BasicGenerator {
   override def destinationDir = "generated-code/php"
 
   // package for models
-  override def modelPackage = Some("FlexibleDiscounting\\Models")
+  override def modelPackage = Some("Allegro\\FlexibleDiscounting\\Models")
 
   // package for apis
-  override def apiPackage = Some("FlexibleDiscounting")
+  override def apiPackage = Some("Allegro\\FlexibleDiscounting")
 
   // file suffix
   override def fileSuffix = ".php"
@@ -104,21 +104,18 @@ class BasicPHPGenerator extends BasicGenerator {
     "long" -> "int",
     "double" -> "float",
     "Array" -> "array",
+    "array" -> "array",
+    "bool" -> "bool",
     "boolean" -> "bool",
-    "Date" -> "DateTime"
+    "Date" -> "DateTime",
+    "BigDecimal" -> "float"
     )
 
   override def toDeclaredType(dt: String): String = {
     val declaredType = typeMapping.getOrElse(dt, dt)
-    declaredType.startsWith("Array") match {
-      case true => {
-        val innerType = dt.dropRight(1).substring(6)
-        typeMapping.contains(innerType) match {
-          case true => "array[" + typeMapping(innerType) + "]"
-          case false => "array[" + innerType + "]"
-        }
-      }
-      case _ => declaredType
+    typeMapping.contains(declaredType) match {
+          case true => declaredType
+          case false => "\\" + modelPackage.getOrElse("") + "\\" + declaredType
     }
   }
 
@@ -144,7 +141,7 @@ class BasicPHPGenerator extends BasicGenerator {
             }
           }
         }
-        declaredType += "[" + toDeclaredType(inner) + "]"
+        declaredType += "[" +toDeclaredType(inner) + "]"
         "array"
       }
       case _ =>
