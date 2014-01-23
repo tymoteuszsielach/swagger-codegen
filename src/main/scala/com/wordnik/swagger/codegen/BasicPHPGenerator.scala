@@ -21,7 +21,13 @@ import com.wordnik.swagger.model._
 import java.io.File
 
 object BasicPHPGenerator extends BasicPHPGenerator {
-  def main(args: Array[String]) = generateClient(args)
+  var packageNameArg = Some("shit")
+  override def apiPackage: Option[String] = {packageNameArg}
+  def main(args: Array[String]) = {
+    packageNameArg = Some(args(1))
+    generateClient(args)
+
+  }
 }
 
 class BasicPHPGenerator extends BasicGenerator {
@@ -38,10 +44,9 @@ class BasicPHPGenerator extends BasicGenerator {
   override def destinationDir = "generated-code/php"
 
   // package for models
-  override def modelPackage = Some("Allegro\\FlexibleDiscounting\\Models")
-
-  // package for apis
-  override def apiPackage = Some("Allegro\\FlexibleDiscounting")
+  override def modelPackage: Option[String] = {
+    Some(apiPackage.getOrElse("").concat("\\Models"))
+  }
 
   // file suffix
   override def fileSuffix = ".php"
