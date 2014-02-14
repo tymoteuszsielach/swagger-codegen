@@ -86,15 +86,15 @@ class BasicPHPGenerator extends BasicGenerator {
         responseClass match {
           case "void" => None
           case e: String => {
-            responseClass.startsWith("List") match {
+            responseClass.startsWith("Array") match {
               case true => {
-                val responseSubClass = responseClass.dropRight(1).substring(5)
+                val responseSubClass = responseClass.dropRight(1).substring(6)
                 typeMapping.contains(responseSubClass) match {
                   case true => Some("array[" + typeMapping(responseSubClass) + "]")
-                  case false => Some("array[" + responseSubClass + "]")
+                  case false => Some("array[" + modelPackage.getOrElse("") + "\\" + responseSubClass + "]")
                 }
               }
-              case false => Some(responseClass)
+              case false => Some(modelPackage.getOrElse("") + "\\" + responseClass)
             }
           }
         }
@@ -108,20 +108,39 @@ class BasicPHPGenerator extends BasicGenerator {
     "float" -> "float",
     "long" -> "int",
     "double" -> "float",
-    "Array" -> "array",
-    "array" -> "array",
     "bool" -> "bool",
     "boolean" -> "bool",
     "Date" -> "DateTime",
+    "DateTime" -> "DateTime",
     "BigDecimal" -> "float"
     )
 
   override def toDeclaredType(dt: String): String = {
     val declaredType = typeMapping.getOrElse(dt, dt)
-    typeMapping.contains(declaredType) match {
-          case true => declaredType
-          case false => "\\" + modelPackage.getOrElse("") + "\\" + declaredType
+    declaredType.startsWith("Array") match {
+        case true => {
+            val innerType = dt.dropRight(1).substring(6)
+            typeMapping.contains(innerType) match {
+                case true => "array[y" + typeMapping(innerType) + "]"
+                case false => "array[y\\" + modelPackage.getOrElse("") + "\\" + innerType + "]"
+            }
+        }
+        case _ => declaredType.startsWith("Map") match {
+            case true => {
+                val innerTypes = dt.dropRight(1).substring(4).split(",")
+                typeMapping.contains(innerTypes(1)) match {
+                                case true => "map[" + innerTypes(0) + "," + typeMapping(innerTypes(1)) + "]"
+                                case false => "map[" + innerTypes(0) + ",\\" + modelPackage.getOrElse("") + "\\" + innerTypes(1) + "]"
+                            }
+            }
+            case false => typeMapping.contains(declaredType) match {
+                                  case true => declaredType
+                                  case false => "\\" + modelPackage.getOrElse("") + "\\" + declaredType
+                        }
+        }
+
     }
+
   }
 
   override def toDeclaration(obj: ModelProperty) = {

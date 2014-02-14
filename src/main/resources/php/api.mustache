@@ -87,7 +87,7 @@ class {{classname}}
         }
 
         $responseObject = $this->apiClient->deserialize($response,
-                                                        '\{{package}}\Models\{{returnType}}');
+                                                        '\{{returnType}}');
         return $responseObject;
 
         {{/returnType}}
